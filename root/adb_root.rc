@@ -4,4 +4,4 @@ service adb_root /system/bin/adb_root
     group root
 
 on post-fs-data
-    mkdir /data/adbroot 0700 root root
+    mkdir /data/adbroot 0700 root root encryption=Require
