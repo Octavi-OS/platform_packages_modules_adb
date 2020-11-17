@@ -92,7 +92,7 @@ const char* const kFeatureOpenscreenMdns = "openscreen_mdns";
 
 namespace {
 
-#if ADB_HOST
+#if ADB_HOST || LEGACY_FFS
 // Tracks and handles atransport*s that are attempting reconnection.
 class ReconnectHandler {
   public:
@@ -931,7 +931,7 @@ static void transport_destroy(atransport* t) {
     remove_transport(t);
 }
 
-#if ADB_HOST
+#if ADB_HOST || LEGACY_FFS
 static int qual_match(const std::string& to_test, const char* prefix, const std::string& qual,
                       bool sanitize_qual) {
     if (to_test.empty()) /* Return true if both the qual and to_test are empty strings. */
@@ -954,7 +954,9 @@ static int qual_match(const std::string& to_test, const char* prefix, const std:
     /* Everything matched so far.  Return true if *ptr is a NUL. */
     return !*ptr;
 }
+#endif
 
+#if ADB_HOST
 atransport* acquire_one_transport(TransportType type, const char* serial, TransportId transport_id,
                                   bool* is_ambiguous, std::string* error_out,
                                   bool accept_any_state) {
@@ -1250,7 +1252,7 @@ void atransport::RunDisconnects() {
     disconnects_.clear();
 }
 
-#if ADB_HOST
+#if ADB_HOST || LEGACY_FFS
 bool atransport::MatchesTarget(const std::string& target) const {
     if (!serial.empty()) {
         if (target == serial) {
@@ -1440,7 +1442,7 @@ bool register_socket_transport(unique_fd s, std::string serial, int port, int lo
     return true;
 }
 
-#if ADB_HOST
+#if ADB_HOST || LEGACY_FFS
 atransport* find_transport(const char* serial) {
     atransport* result = nullptr;
 

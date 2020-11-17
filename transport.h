@@ -248,7 +248,7 @@ enum class ReconnectResult {
     Abort,
 };
 
-#if ADB_HOST
+#if ADB_HOST || LEGACY_FFS
 struct usb_handle;
 #endif
 
@@ -267,7 +267,7 @@ class atransport : public enable_weak_from_this<atransport> {
           connection_state_(state),
           connection_(nullptr),
           reconnect_(std::move(reconnect)) {
-#if ADB_HOST
+#if ADB_HOST || LEGACY_FFS
         connection_waitable_ = std::make_shared<ConnectionWaitable>();
 #endif
 
@@ -295,7 +295,7 @@ class atransport : public enable_weak_from_this<atransport> {
         return connection_;
     }
 
-#if ADB_HOST
+#if ADB_HOST || LEGACY_FFS
     void SetUsbHandle(usb_handle* h) { usb_handle_ = h; }
     usb_handle* GetUsbHandle() { return usb_handle_; }
 #endif
@@ -354,7 +354,7 @@ class atransport : public enable_weak_from_this<atransport> {
     void RemoveDisconnect(adisconnect* disconnect);
     void RunDisconnects();
 
-#if ADB_HOST
+#if ADB_HOST || LEGACY_FFS
     // Returns true if |target| matches this transport. A matching |target| can be any of:
     //   * <serial>
     //   * <devpath>
@@ -398,7 +398,7 @@ class atransport : public enable_weak_from_this<atransport> {
     std::deque<std::shared_ptr<RSA>> keys_;
 #endif
 
-#if ADB_HOST
+#if ADB_HOST || LEGACY_FFS
     // A sharable object that can be used to wait for the atransport's
     // connection to be established.
     std::shared_ptr<ConnectionWaitable> connection_waitable_;
@@ -407,7 +407,7 @@ class atransport : public enable_weak_from_this<atransport> {
     // The underlying connection object.
     std::shared_ptr<Connection> connection_ GUARDED_BY(mutex_);
 
-#if ADB_HOST
+#if ADB_HOST || LEGACY_FFS
     // USB handle for the connection, if available.
     usb_handle* usb_handle_ = nullptr;
 #endif
@@ -459,7 +459,7 @@ void kick_all_transports_by_auth_key(std::string_view auth_key);
 
 void register_transport(atransport* transport);
 
-#if ADB_HOST
+#if ADB_HOST || LEGACY_FFS
 void init_usb_transport(atransport* t, usb_handle* usb);
 
 void register_usb_transport(std::shared_ptr<Connection> connection, const char* serial,
